@@ -33,8 +33,14 @@ s: string
 returns: string
 */
 char *reverse_string(char *s) {
-    //TODO: Fill this in.
-    return "";
+    size_t len = strlen(s);
+    char *reversed_string = malloc(len);
+
+    for (int i = len; i >= 0; i--) {
+        reversed_string[len - i] = *(s + i - 1);
+    }
+
+    return reversed_string;
 }
 
 /* ctoi: Converts a character to integer.
@@ -53,13 +59,18 @@ i: integer 0 to 9
 returns: character '0' to '9'
 */
 char itoc(int i) {
-    //TODO: Fill this in, with an appropriate assertion.
-    return '0';
+    // check that the given integer was between 0 and 9
+    assert (i >= 0);
+    assert (i < 10);
+
+    // convert integer to character
+    char num_char = i + '0';
+    return num_char;
 }
 
 /* add_digits: Adds two decimal digits, returns the total and carry.
 
-For example, if a='5', b='6', and carry='1', the sum is 12, so
+For example, if a='5', b='6', and c='1', the sum is 12, so
 the output value of total should be '2' and carry should be '1'
 
 a: character '0' to '9'
@@ -70,8 +81,28 @@ carry: pointer to char
 
 */
 void add_digits(char a, char b, char c, char *total, char *carry) {
-    //TODO: Fill this in.
+    // convert chars to floats
+    float num_a = (float) a - '0';
+    float num_b = (float) b - '0';
+    float num_c = (float) c - '0';
+
+    // add floats together
+    float num_total = num_a + num_b + num_c;
+    
+    // convert number to an array of chars
+    char total_array[10];
+    sprintf(total_array, "%f", num_total);
+
+    // assign the provided pointers to the array values
+    if (num_total >= 10) {
+        *carry = total_array[0];
+        *total = total_array[1];
+    } else {
+        *carry = '0';
+        *total = total_array[0];
+    }
 }
+
 
 /* Define a type to represent a BigInt.
    Internally, a BigInt is a string of digits, with the digits in
@@ -101,19 +132,19 @@ void add_bigint(BigInt x, BigInt y, char carry_in, BigInt z) {
     if (*x == '\0') {
         a = '0';
         dx = 0;
-    }else{
+    } else {
         a = *x;
     }
     if (*y == '\0') {
         b = '0';
         dy = 0;
-    }else{
+    } else {
         b = *y;
     }
 
     // printf("%c %c %c\n", a, b, carry_in);
     add_digits(a, b, carry_in, &total, &carry_out);
-    // printf("%c %c\n", carry_out, total);
+    // printf("carry: %c, total: %c\n", carry_out, total);
 
     // if total and carry are 0, we're done
     if (total == '0' && carry_out == '0') {
@@ -205,6 +236,6 @@ int main (int argc, char *argv[])
 
     //TODO: When you have the first three functions working,
     //      uncomment the following, and it should work.
-    // test_add_bigint();
+    test_add_bigint();
     return 0;
 }
