@@ -1,5 +1,7 @@
 util.o: util.h util.c
-	gcc -c util.c
+	gcc -c -Wall util.h util.c
 
 trout: trout.h trout.c util.o main.c
-	gcc -g -o trout trout.c util.o main.c
+	gcc -g -o trout trout.c util.o main.c 
+	# when I add -Wall here, I get "error adding symbols: Bad value" and
+	# I can't figure out why since it compiles cleanly otherwise

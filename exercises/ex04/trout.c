@@ -1,4 +1,7 @@
 #include "trout.h"
+#include "util.h"
+
+void sig_alrm (int signo);
 
 /* variables we might want to configure */
 int max_ttl = 30;

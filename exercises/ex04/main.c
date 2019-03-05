@@ -1,4 +1,5 @@
 #include "trout.h"
+#include "util.h"
 
 /* I made some of the variables static in this file because I was 
 getting a multiple definitions error since they're already
