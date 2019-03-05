@@ -64,7 +64,8 @@ main(int argc, char *argv[])
 
     time = time_func(iters, dummy2);
     printf("%f ms \t dummy2\n", time);
-
+    
+    // random_float is faster than my_random_float
     time = time_func(iters, random_float);
     printf("%f ms \t random_float\n", time);
 
@@ -76,4 +77,11 @@ main(int argc, char *argv[])
 
     time = time_func(iters, random_float);
     printf("%f ms \t random_float\n", time);
+
+    // random_double is faster than my_random_double
+    time = time_func(iters, my_random_double); 
+    printf("%f ms \t my_random_double\n", time);
+
+    time = time_func(iters, random_double);
+    printf("%f ms \t random_double\n", time);
 }
