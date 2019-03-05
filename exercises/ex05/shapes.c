@@ -60,9 +60,18 @@ returns: new Rectangle; use free_rectangle to free
 */
 Rectangle *make_rectangle(Point *corner, double width, double height) {
     // FILL THIS IN
-    // What are the pros and cons of making a copy of corner?
-    return NULL;
+    // Q: What are the pros and cons of making a copy of corner?
+    // A: So the rectangle isn't pointing to an old point
+    Point new_corner = {corner->x, corner->y};
+    Rectangle rectangle = {&new_corner, width, height};
+    return &rectangle;
 }
+
+
+// typedef struct {
+//     Point *corner;
+//     double width, height;
+// } Rectangle;
 
 /* Return string representation
 
@@ -83,6 +92,7 @@ rectangle: Rectangle
 */
 void free_rectangle(Rectangle *rectangle) {
     // FILL THIS IN
+    free(rectangle);
 }
 
 /* Check whether a point is inside a rectangle.
