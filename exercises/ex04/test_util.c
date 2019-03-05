@@ -1,4 +1,5 @@
-/*  This program tests the function
+/*  This program tests the function icmpcode_v4(int code) in util.c;
+	It's based off of the test_endswith.c program.
 
 	Written for SoftSys Exercise 3 by Mary Keenan. 
 */
@@ -10,27 +11,28 @@
 #include "util.h"
 #include "minunit.h"
 
+int tests_run = 0;
 
-
-static char *test1() {
-    int res = endswith("endswith", "swith");
-    char *message = "test1 failed: endswith(\"endswith\", \"swith\") should return 1";
-    mu_assert(message, res == 1);
-    return NULL;
+static char *test_icmpcode_v4() {
+    char * res = icmpcode_v4(12);
+    char *message = "icmpcode_v4 test failed: icmpcode_v4(12) should return \"host unreachable for TOS\"";
+    mu_assert(message, !strcmp(res, "host unreachable for TOS"));
+    return NULL; 
 }
 
-static char * run_test() {
-    mu_run_test(test1);
+static char * all_tests() {
+    mu_run_test(test_icmpcode_v4);
     return NULL;
 }
 
 int main(int argc, char **argv) {
-    char *result = run_test();
+    char *result = all_tests();
     if (result != NULL) {
         printf("%s\n", result);
     } else {
         printf("ALL TESTS PASSED\n");
     }
+    printf("Tests run: %d\n", tests_run);
 
     return result != 0;
 }

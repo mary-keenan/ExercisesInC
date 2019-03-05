@@ -18,6 +18,7 @@
 #include <sys/un.h>
 #include <stdarg.h>
 #include <syslog.h>
+#include <unistd.h>
 
 #define MAXLINE 4096
 
@@ -50,3 +51,6 @@ ssize_t Recvfrom(int fd, void *ptr, size_t nbytes, int flags,
 		 struct sockaddr *sa, socklen_t *salenptr);
 void err_sys (char *fmt, ...);
 void err_quit (char *fmt, ...);
+
+/* outside functions that were getting implicit declaration errors */
+int pipe(int pipefd[2]);

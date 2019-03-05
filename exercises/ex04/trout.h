@@ -18,6 +18,7 @@
 #include <sys/un.h>
 #include <stdarg.h>
 #include <syslog.h>
+#include <unistd.h>
 
 #define BUFSIZE 1500
 
@@ -40,10 +41,4 @@ void print_report ();
 void send_dgram (int ttl);
 int send_probes (int ttl);
 void loop_ttl ();
-
-/* outside functions that were getting implicit declaration errors */
-int alarm(int seconds);
-int setuid(uid_t uid);
-uid_t getuid(void);
-pid_t getpid(void);
 

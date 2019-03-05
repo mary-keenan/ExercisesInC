@@ -6,7 +6,7 @@ void err_doit (int errnoflag, int level, char *fmt, va_list ap)
   char buf[MAXLINE];
 
   errno_save = errno;             /* value caller might want printed */
-  vsnprintf (buf, sizeof(buf), fmt, ap);
+  vsnprintf (buf, sizeof(buf), fmt, ap); 
   n = strnlen (buf, 80); /* added max length */
   if (errnoflag)
     snprintf (buf+n, sizeof(buf) - n, ": %s", strerror(errno_save));
@@ -20,7 +20,7 @@ void err_doit (int errnoflag, int level, char *fmt, va_list ap)
 void err_sys (char *fmt, ...)
 {
   va_list ap;
-  va_start (ap, fmt);
+  va_start (ap, fmt); 
   err_doit (1, LOG_ERR, fmt, ap);
   va_end(ap);
   exit(1);
@@ -122,7 +122,7 @@ void tv_sub (struct timeval *out, struct timeval *in)
   out->tv_sec -= in->tv_sec;
 }
 
-char *icmpcode_v4(int code)
+char *icmpcode_v4(int code) 
 {
   switch (code) {
     case  0: return("network unreachable");
@@ -185,7 +185,7 @@ void *Calloc(size_t n, size_t size)
   if ( (ptr = calloc(n, size)) == NULL)
     err_sys("calloc error");
   return(ptr);
-}
+} 
 
 void Gettimeofday(struct timeval *tv, void *foo)
 {
@@ -201,7 +201,7 @@ void Pipe(int *fds)
 }
 
 void Bind(int fd, const struct sockaddr *sa, socklen_t salen)
-{
+{ 
   if (bind(fd, sa, salen) < 0)
     err_sys("bind error");
 }
