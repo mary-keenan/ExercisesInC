@@ -36,8 +36,10 @@ typedef struct {
 
 /* takes two Point pointers and returns a pointer to a new Line */
 Line *make_line(Point *pointer1, Point *pointer2) {
-    Line line = {{pointer1, pointer2}};
-    return &line;
+    Line *line = malloc(sizeof(Line));
+    line->start = pointer1;
+    line->end = pointer2;
+    return line;
 }
 
 /* Return a new Line
@@ -111,7 +113,6 @@ void main (int argc, char *argv[]) {
 
     printf("%s\n", point_to_string(lower_left));
     printf("%s\n", point_to_string(upper_right));
-    printf("hiya");
 
     Rectangle *rectangle = make_rectangle(lower_left, 2.0, 2.0);
     printf("%s\n", rectangle_to_string(rectangle));
