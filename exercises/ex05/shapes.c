@@ -63,8 +63,11 @@ Rectangle *make_rectangle(Point *corner, double width, double height) {
     // Q: What are the pros and cons of making a copy of corner?
     // A: So the rectangle isn't pointing to an old point
     Point new_corner = {corner->x, corner->y};
-    Rectangle rectangle = {&new_corner, width, height};
-    return &rectangle;
+    Rectangle *rectangle = malloc(sizeof(Rectangle));
+    rectangle->corner = &new_corner;
+    rectangle->width = width;
+    rectangle->height = height;
+    return rectangle;
 }
 
 
@@ -105,6 +108,11 @@ returns: 1 if the point is in the rectangle, else 0
 */
 int point_in_rect(Point *p, Rectangle *rect) {
     // FILL THIS IN
+    if (p->x >= rect->corner->x && p->x <= rect->corner->x+rect->width){
+        if (p->y >= rect->corner->y && p->y <= rect->corner->y+rect->height){
+            return 1;
+        }
+    }
 
     return 0;
 }
