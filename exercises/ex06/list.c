@@ -129,6 +129,9 @@ int main() {
     head->next = make_node(2, NULL);
     head->next->next = make_node(3, NULL);
     head->next->next->next = make_node(4, NULL);
+    head->next->next->next->next = make_node(5, NULL);
+    head->next->next->next->next->next = make_node(6, NULL);
+    head->next->next->next->next->next->next = make_node(7, NULL);
 
     Node **list = &head;
     print_list(list);

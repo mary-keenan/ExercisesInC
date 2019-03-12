@@ -57,7 +57,11 @@ int pop(Node **list) {
     int retval;
     Node *head = *list;
 
-    Node *next_node = head->next;
+    if (head == NULL) {
+        return -1;
+    }
+
+    Node *next_node = head->next; // segfault here 
     retval = head->val;
     free(head);
     *list = next_node;
