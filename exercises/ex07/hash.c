@@ -102,12 +102,14 @@ typedef struct {
 * returns: pointer to Hashable
 *
 */
-Hashable *make_hashable(void *key, void* class)
+Hashable *make_hashable(void *key,
+    int (*hash) (void *),
+    int (*equal) (void *, void *))
 {
     Hashable *hashable = (Hashable *) malloc (sizeof (Hashable));
     hashable->key = key;
-    hashable->hash = class->hash;
-    hashable->equal = class->hash;
+    hashable->hash = hash;
+    hashable->equal = equal;
     return hashable;
 }
 
@@ -233,22 +235,6 @@ int equal_hashable(Hashable *h1, Hashable *h2)
 }
 
 
-
-/* we save space by moving function pointers to class objects -- 
-this class is for integer keys... */
-typedef struct {
-    int (*hash_int) (int *);
-    int (*equal_int) (int *, int *);
-} IntClass;
-
-/* and this class is for string keys -- they both have the relevant
-function pointers for their type */
-typedef struct {
-    int (*hash_string) (char *);
-    int (*equal_string) (char *, char *);
-} StringClass;
-
-
 /* Makes a Hashable int.
 *
 * Allocates space and copies the int.
@@ -259,10 +245,9 @@ typedef struct {
 */
 Hashable *make_hashable_int (int x)
 {
-    static IntClass int_class;
     int *p = (int *) malloc (sizeof (int));
     *p = x;
-    return make_hashable((void *) p, int_class);
+    return make_hashable((void *) p, hash_int, equal_int);
 }
 
 
@@ -276,7 +261,7 @@ Hashable *make_hashable_int (int x)
 */
 Hashable *make_hashable_string (char *s)
 {
-    return make_hashable((void *) s, string_class->hash_string, string_class->equal_string);
+    return make_hashable((void *) s, hash_string, equal_string);
 }
 
 
