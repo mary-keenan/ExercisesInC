@@ -102,14 +102,12 @@ typedef struct {
 * returns: pointer to Hashable
 *
 */
-Hashable *make_hashable(void *key,
-    int (*hash) (void *),
-    int (*equal) (void *, void *))
+Hashable *make_hashable(void *key, void* class)
 {
     Hashable *hashable = (Hashable *) malloc (sizeof (Hashable));
     hashable->key = key;
-    hashable->hash = hash;
-    hashable->equal = equal;
+    hashable->hash = class->hash;
+    hashable->equal = class->hash;
     return hashable;
 }
 
@@ -179,6 +177,10 @@ int hash_hashable(Hashable *hashable)
 int equal_int (void *ip, void *jp)
 {
     // FILL THIS IN!
+    if (* (int*) ip == * (int*) jp) {
+        return 1;
+    }
+
     return 0;
 }
 
@@ -193,6 +195,23 @@ int equal_int (void *ip, void *jp)
 int equal_string (void *s1, void *s2)
 {
     // FILL THIS IN!
+
+    /* I don't want to keep casting, so we'll just do that once */
+    char * string1 = (char *) s1;
+    char * string2 = (char *) s2;
+
+    while (*string1 == *string2) {
+        
+        if (*string1 == '\0') { /* this means they're both finished */
+            return 1;
+        }
+
+        /* increment the pointers of both strings to point to their 
+        next char */
+        string1++;
+        string2++;
+    }
+
     return 0;
 }
 
@@ -208,8 +227,26 @@ int equal_string (void *s1, void *s2)
 int equal_hashable(Hashable *h1, Hashable *h2)
 {
     // FILL THIS IN!
-    return 0;
+    
+    /* this uses the appropriate equal_X function on the keys */
+    return h1->equal (h1->key, h2->key);
 }
+
+
+
+/* we save space by moving function pointers to class objects -- 
+this class is for integer keys... */
+typedef struct {
+    int (*hash_int) (int *);
+    int (*equal_int) (int *, int *);
+} IntClass;
+
+/* and this class is for string keys -- they both have the relevant
+function pointers for their type */
+typedef struct {
+    int (*hash_string) (char *);
+    int (*equal_string) (char *, char *);
+} StringClass;
 
 
 /* Makes a Hashable int.
@@ -222,9 +259,10 @@ int equal_hashable(Hashable *h1, Hashable *h2)
 */
 Hashable *make_hashable_int (int x)
 {
+    static IntClass int_class;
     int *p = (int *) malloc (sizeof (int));
     *p = x;
-    return make_hashable((void *) p, hash_int, equal_int);
+    return make_hashable((void *) p, int_class);
 }
 
 
@@ -238,7 +276,7 @@ Hashable *make_hashable_int (int x)
 */
 Hashable *make_hashable_string (char *s)
 {
-    return make_hashable((void *) s, hash_string, equal_string);
+    return make_hashable((void *) s, string_class->hash_string, string_class->equal_string);
 }
 
 
@@ -297,6 +335,19 @@ Node *prepend(Hashable *key, Value *value, Node *rest)
 Value *list_lookup(Node *list, Hashable *key)
 {
     // FILL THIS IN!
+
+    Node *temp = list;
+
+    while (temp != NULL) {
+
+        /* check if we've found the right key (and therefore value) */
+        if (temp->key->key == key->key) {
+            return temp->value;
+        }
+
+        temp = temp->next;
+    }
+
     return NULL;
 }
 
@@ -342,6 +393,15 @@ void print_map(Map *map)
 void map_add(Map *map, Hashable *key, Value *value)
 {
     // FILL THIS IN!
+
+    /* find the proper list of nodes to insert the pair in */
+    int hash = hash_hashable(key) % map->n;
+    Node *matching_list = (map->lists)[hash];
+
+    /* insert the key-value before the first node in the list and
+    update the list pointer in the map */
+    Node *inserted_node = prepend(key, value, matching_list);
+    (map->lists)[hash] = inserted_node;
 }
 
 
@@ -349,7 +409,13 @@ void map_add(Map *map, Hashable *key, Value *value)
 Value *map_lookup(Map *map, Hashable *key)
 {
     // FILL THIS IN!
-    return NULL;
+
+    /* find the proper list of nodes to lookup the key in */
+    int hash = hash_hashable(key) % map->n;
+    Node *matching_node = (map->lists)[hash];
+
+    /* iterate through the list to find the corresponding key */
+    return list_lookup(matching_node, key);
 }
 
 
