@@ -31,6 +31,12 @@ Matrix *make_matrix(int num_rows, int num_cols) {
 */
 void free_matrix(Matrix *matrix) {
     // TODO: Fill this in.
+    for (int i = 0; i < matrix->num_rows; i++) {
+        free(matrix->rows[i]);
+    }
+    
+    free(matrix->rows);
+    free(matrix);
 }
 
 /* Print a row of a matrix.
@@ -57,6 +63,17 @@ of row i is 0.
 */
 void reduce_matrix_rows(Matrix *matrix, int i, int j) {
     // TODO: Fill this in.
+    double* row_i = matrix->rows[i];
+    double* row_j = matrix->rows[j];
+
+    double first_element_of_i = row_i[0];
+    double first_element_of_j = row_j[0];
+
+    int multiplication_constant = first_element_of_i / first_element_of_j;
+
+    for (int n = 0; n < matrix->num_cols; n++) {
+        row_i[n] = row_i[n] - multiplication_constant * row_j[n];
+    }
 }
 
 int main () {
