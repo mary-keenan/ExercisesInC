@@ -53,6 +53,10 @@ int main(int argc, char** argv) {
 			}
 	    }
 
+	 	/* NOTE: I DID NOT ACTUALLY GET SORTING WORKING BECAUSE I
+	 	OVERLOOKED THE FACT THAT YOU SORT KEYS BY THEIR VALUES BUT
+	 	THE STUFF BELOW IS WHAT I HAD WHEN I REALIZED THAT*/
+
 	    /* initialize objects needed to iterate through the hash table */
 	    GHashTableIter table_iter;
         gint table_size = g_hash_table_size(hash_table);
