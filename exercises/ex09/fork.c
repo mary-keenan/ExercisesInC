@@ -31,10 +31,11 @@ double get_seconds() {
 }
 
 
-void child_code(int i, int heap_var, int stack_var)
+void child_code(int i, int heap_var)
 {
     static int static_var = 0;
     sleep(i);
+    int stack_var = 0;
     printf("Child %d stores global_var here %d, heap_var here %d, stack_var here %d, and static_var here %d.\n", i, &global_var, &heap_var, &stack_var, &static_var);
 }
 
@@ -48,7 +49,6 @@ int main(int argc, char *argv[])
     double start, stop;
     int i, num_children;
     int heap_var = malloc(sizeof(int));
-    int stack_var = 0;
 
     // the first command-line argument is the name of the executable.
     // if there is a second, it is the number of children to create.
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
         /* see if we're the parent or the child */
         if (pid == 0) {
-            child_code(i, heap_var, stack_var);
+            child_code(i, heap_var);
             exit(i);
         }
     }
@@ -119,13 +119,14 @@ static_var is a static variable so it's located in the static data
 segment.
 
 When the children processes print out the addresses of each of these
-variables, they're the same. The global_var address is the same, the 
-heap_var address is the same, etc. This means the children processes
-share the same global, heap, and stack segments. Global and 
-static variables are stored in the (static) data segment, so this also 
-means the children share the same data segment. I'm not sure how to check
-if the code segments are shared but I know they should be since the fork 
-is supposed to create an exact copy, with the exception of the process 
-ID.
+variables, they're all the same. The global_var address is the same, the 
+heap_var address is the same, etc. This suggests the children threads
+share the same global, static, stack, and heap segments.
+
+Global and static variables are stored in the (static) data segment, 
+so this also means the children share the same data segment. I'm not 
+sure how to check if the code segments are shared but I know they 
+should be since the fork is supposed to create an exact copy, with 
+the exception of the process ID.
 
 */
