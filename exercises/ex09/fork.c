@@ -18,6 +18,7 @@ License: MIT License https://opensource.org/licenses/MIT
 // errno is an external global variable that contains
 // error information
 extern int errno;
+int global_var = 0;
 
 
 // get_seconds returns the number of seconds since the
@@ -30,10 +31,11 @@ double get_seconds() {
 }
 
 
-void child_code(int i)
+void child_code(int i, int heap_var, int stack_var)
 {
+    static int static_var = 0;
     sleep(i);
-    printf("Hello from child %d.\n", i);
+    printf("Child %d stores global_var here %d, heap_var here %d, stack_var here %d, and static_var here %d.\n", i, &global_var, &heap_var, &stack_var, &static_var);
 }
 
 // main takes two parameters: argc is the number of command-line
@@ -45,6 +47,8 @@ int main(int argc, char *argv[])
     pid_t pid;
     double start, stop;
     int i, num_children;
+    int heap_var = malloc(sizeof(int));
+    int stack_var = 0;
 
     // the first command-line argument is the name of the executable.
     // if there is a second, it is the number of children to create.
@@ -72,7 +76,7 @@ int main(int argc, char *argv[])
 
         /* see if we're the parent or the child */
         if (pid == 0) {
-            child_code(i);
+            child_code(i, heap_var, stack_var);
             exit(i);
         }
     }
@@ -99,3 +103,29 @@ int main(int argc, char *argv[])
 
     exit(0);
 }
+
+/*
+
+global_var is a global variable since it's initialized outside all of the
+functions' scopes, and therefore it's in the global data segment.
+
+heap_var is located in the heap since malloc() was called (it was 
+dynamically allocated).
+
+stack_var is located on the stack since it's just a local variable in
+main().
+
+static_var is a static variable so it's located in the static data 
+segment.
+
+When the children processes print out the addresses of each of these
+variables, they're the same. The global_var address is the same, the 
+heap_var address is the same, etc. This means the children processes
+share the same global, heap, and stack segments. Global and 
+static variables are stored in the (static) data segment, so this also 
+means the children share the same data segment. I'm not sure how to check
+if the code segments are shared but I know they should be since the fork 
+is supposed to create an exact copy, with the exception of the process 
+ID.
+
+*/
