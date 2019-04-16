@@ -1,6 +1,11 @@
-
 counter: counter.c
 	gcc -Wall -o counter counter.c -lpthread
+
+counter_array: counter_array.c
+	gcc -Wall -o counter_array counter_array.c -lpthread
+
+my_counter_array_mutex: mutex.h mutex.c my_counter_array_mutex.c
+	gcc -Wall -o my_counter_array_mutex mutex.h mutex.c my_counter_array_mutex.c -lpthread
 
 counter_mutex: counter_mutex.c
 	gcc -Wall -o counter_mutex counter_mutex.c -lpthread

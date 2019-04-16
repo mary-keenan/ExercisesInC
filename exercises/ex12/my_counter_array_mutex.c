@@ -8,14 +8,15 @@ License: GNU GPLv3
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "mutex.h"
 
 #define NUM_CHILDREN 5
 
 void perror_exit(char *s)
 {
     perror(s);
-    exit(-1);
-}
+    exit(-1); 
+} 
 
 void *check_malloc(int size)
 {
@@ -30,6 +31,7 @@ typedef struct {
     int counter;
     int end;
     int *array;
+    Mutex *mutex;
 } Shared;
 
 Shared *make_shared(int end)
@@ -39,6 +41,7 @@ Shared *make_shared(int end)
 
     shared->counter = 0;
     shared->end = end;
+    shared->mutex = make_mutex();
 
     shared->array = check_malloc(shared->end * sizeof(int));
     for (i=0; i<shared->end; i++) {
@@ -75,12 +78,15 @@ void child_code(Shared *shared)
         if (shared->counter >= shared->end) {
             return;
         }
+
+        mutex_lock(shared->mutex);
         shared->array[shared->counter]++;
         shared->counter++;
 
         if (shared->counter % 10000 == 0) {
             // printf("%d\n", shared->counter);
         }
+        mutex_unlock(shared->mutex);
     }
 }
 
@@ -108,7 +114,6 @@ int main()
 {
     int i;
     pthread_t child[NUM_CHILDREN];
-
     Shared *shared = make_shared(1000000);
 
     for (i=0; i<NUM_CHILDREN; i++) {
@@ -133,4 +138,17 @@ next line, the counter value had been increased by one or more other
 threads to a value that wasn't cleanly divisble by 10,000. The counter
 should have been locked before the if statement and until it got
 printed.
+
+(confirmed there are no sync errors now)
+
+QUESTION FOUR
+I changed the number of children for both programs to 5 to make any
+differences in runtime more obvious.
+
+counter_array (.075, .23, .004 for real, user, and sys respectively) 
+ran much faster than my_counter_array_mutex (.151, .223, .287 for real,
+user, and sys respectively) in all but one of the categories (user);
+they were nearly equal in the user time metric. The overall speed
+advantage of counter_array indicates that synchronization adds a lot of
+overhead that slows the program down.
 */
