@@ -178,6 +178,17 @@ Node *make_something() {
     return node3;
 }
 
+/* Free each node in a linked list iteratively */
+void free_linked_list(Node ** list) {
+    Node * current = *list;
+    Node * next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+}
 
 int main() {
     // make a list of even numbers
@@ -207,7 +218,11 @@ int main() {
     print_list(&empty);
 
     Node *something = make_something();
-    free(something);
+
+    // free lists
+    free_linked_list(&test_list);
+    free_linked_list(&empty);
+    free_linked_list(&something);
 
     return 0;
 }

@@ -66,10 +66,17 @@ void incr(GHashTable* hash, gchar *key)
     if (val == NULL) {
         gint *val1 = g_new(gint, 1);
         *val1 = 1;
-        g_hash_table_insert(hash, key, val1);
+        gchar * key1 = g_strdup(key);
+        g_hash_table_insert(hash, key1, val1);
     } else {
         *val += 1;
     }
+}
+
+/* callback that frees keys and values in a hash table or
+sequence when they're destroyed */
+void free_table_or_sequence_item(gpointer item) {
+    g_free(item);
 }
 
 int main(int argc, char** argv)
@@ -93,7 +100,9 @@ int main(int argc, char** argv)
     (one-L) NUL terminated strings */
     gchar **array;
     gchar line[128];
-    GHashTable* hash = g_hash_table_new(g_str_hash, g_str_equal);
+    GHashTable* hash = g_hash_table_new_full(g_str_hash, g_str_equal, 
+        (GDestroyNotify) free_table_or_sequence_item, 
+        (GDestroyNotify) free_table_or_sequence_item);
 
     // read lines from the file and build the hash table
     while (1) {
@@ -104,6 +113,7 @@ int main(int argc, char** argv)
         for (int i=0; array[i] != NULL; i++) {
             incr(hash, array[i]);
         }
+        g_strfreev(array);
     }
     fclose(fp);
 
@@ -111,11 +121,11 @@ int main(int argc, char** argv)
     // g_hash_table_foreach(hash, (GHFunc) kv_printor, "Word %s freq %d\n");
 
     // iterate the hash table and build the sequence
-    GSequence *seq = g_sequence_new(NULL);
+    GSequence *seq = g_sequence_new((GDestroyNotify) free_table_or_sequence_item);
     g_hash_table_foreach(hash, (GHFunc) accumulator, (gpointer) seq);
 
     // iterate the sequence and print the pairs
-    g_sequence_foreach(seq, (GFunc) pair_printor, NULL);
+    // g_sequence_foreach(seq, (GFunc) pair_printor, NULL);
 
     // try (unsuccessfully) to free everything
     g_hash_table_destroy(hash);
